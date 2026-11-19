@@ -1,8 +1,6 @@
 # Convenient and Fair: Volleyball Tournament Scheduler
 
-**Live app:** _link added after deploy to Streamlit Community Cloud_
-
-COMP 560 final project. One question:
+COMP 560 final project. Big question:
 
 > Can a volleyball tournament be both convenient for teams and fair to the
 > strongest team, and what does each format trade to get there?
@@ -169,11 +167,11 @@ with permission.
    ```bash
    pytest -q
    ```
-5. **Open the app** (opens http://localhost:8501; Ctrl+C to stop)
+5. **Open the app**
    ```bash
    streamlit run app/streamlit_app.py
    ```
-6. **Reproduce all results** (about 13 min; writes `results/` and `figures/`)
+6. **Reproduce all results** (writes `results/` and `figures/`)
    ```bash
    python -m experiments.run_all
    ```
