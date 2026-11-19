@@ -68,19 +68,29 @@ def main():
     sd.to_csv(RESULTS / "e1_nodes_vs_size.csv", index=False)
     print(sd.to_string(index=False))
 
-    fig, ax = plt.subplots(figsize=(6, 3.6))
+    plot_nodes(sd, cfg["size_scan_node_limit"])
+
+
+def plot_nodes(sd: pd.DataFrame, limit: int):
+    import numpy as np
+    sd = sd.copy()
+    sd["config"] = sd.pools.astype(str) + " pool" + np.where(sd.pools > 1, "s", "") + " of " + sd.pool_size.astype(str)
+    order = sd.drop_duplicates("config").sort_values(["matches", "pools"]).config.tolist()
     labels = {"ucs": "UCS", "astar_basic": "A* (makespan h)", "astar": "A* (full h)"}
-    for col, m in zip(SERIES, labels):
-        d = sd[sd.method == m].sort_values("matches")
-        ax.plot(d.matches, d.nodes_expanded, color=col, lw=2, marker="o", ms=6, label=labels[m])
-        hit = d[~d.finished]
-        ax.scatter(hit.matches, hit.nodes_expanded, s=90, facecolors="none", edgecolors=col, lw=1.5)
-    ax.axhline(cfg["size_scan_node_limit"], color=BASELINE, ls="--", lw=1)
-    ax.text(ax.get_xlim()[0], cfg["size_scan_node_limit"] * 1.15, " node limit (open circles = hit it)",
-            color=BASELINE, fontsize=8)
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    xs = np.arange(len(order))
+    for j, (m, col) in enumerate(zip(labels, SERIES)):
+        d = sd[sd.method == m].set_index("config").loc[order]
+        x = xs + (j - 1) * 0.27
+        ax.bar(x, d.nodes_expanded, width=0.25, color=np.where(d.finished, col, "white"),
+               edgecolor=col, linewidth=1.5, label=labels[m])
+    ax.axhline(limit, color=BASELINE, ls="--", lw=1)
+    ax.text(-0.45, limit * 1.25, "node limit; hollow bar = did not finish", color=BASELINE, fontsize=8)
     ax.set_yscale("log")
-    style(ax, "Nodes expanded vs instance size", "pool matches in the instance", "nodes expanded (log)")
-    ax.legend(frameon=False, fontsize=8)
+    mcount = sd.drop_duplicates("config").set_index("config").loc[order].matches
+    ax.set_xticks(xs, [f"{c}\n({n} matches)" for c, n in zip(order, mcount)], fontsize=8)
+    style(ax, "Nodes expanded to prove the optimum", None, "nodes expanded (log)")
+    ax.legend(frameon=False, fontsize=8, loc="upper left", bbox_to_anchor=(0, 0.93))
     save(fig, "e1_nodes_vs_size.png")
 
 

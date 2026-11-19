@@ -21,7 +21,7 @@ e1:
 e2:
   medium: {n: 10, base_seed: 2000}
   large: {n: 6, base_seed: 3000}
-  search_node_limit: 150000
+  search_node_limit: 25000   # A* / wA* give up here; at 150k they still never finished on medium
   annealing: {n_moves: 20000, restarts: 3}
   methods: [template, random, greedy, wastar2, astar, annealing]
 
