@@ -49,6 +49,12 @@ dominates pools. Many runs are needed to tell whether that's rare or common.
 - Strength is one number: no matchup or style effects.
 - Ratings fixed during a tournament: no fatigue or form swings.
 
+## Monte Carlo result: 1,000 tournaments (16 teams, 4 pools of 4, top 2 -> Gold)
+- Best team T12 (1675) won Gold 39.8% of the time (± 3.0%, 95% margin).
+- Pure luck would be 6.25% (1 in 16), so the format rewards skill ~6x over chance.
+- But the best team still loses ~60% of tournaments; the seed-7 upset was the
+  typical outcome, not a fluke.
+
 ## Next steps
 - Best team's win rate over 1,000 runs, with margin of error.
 - Sanity checks: equal ratings, each team ~1/16; huge spread, best team ~always.
