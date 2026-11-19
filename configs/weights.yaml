@@ -1,0 +1,7 @@
+# Soft-cost weights (first guess; tune to what directors complain about).
+idle: 1            # per empty slot between a team's first and last activity
+three_straight: 5  # per time a team plays a 3rd consecutive slot
+double_work: 2     # per time a team refs a 2nd consecutive slot
+work_imbalance: 3  # per pool: max refs worked - min refs worked
+coach_conflict: 10 # per slot per pair of same-coach teams both busy
+makespan: 2        # per slot used through the last match

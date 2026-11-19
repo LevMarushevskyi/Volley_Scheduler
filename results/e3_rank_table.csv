@@ -1,0 +1,13 @@
+setting,method,mean_total,mean_rank
+coach_heavy,annealing,97.25,1.0
+coach_heavy,greedy,143.12,2.25
+coach_heavy,random,269.5,3.5
+coach_heavy,template,210.38,3.0
+default,annealing,83.5,1.12
+default,greedy,102.5,2.38
+default,random,163.25,3.5
+default,template,110.38,2.5
+idle_heavy,annealing,142.12,1.0
+idle_heavy,greedy,176.5,2.5
+idle_heavy,random,270.0,3.5
+idle_heavy,template,220.5,2.62

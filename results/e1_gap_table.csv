@@ -1,0 +1,10 @@
+method,mean_gap,max_gap,share_optimal,mean_nodes
+annealing,0.0,0.0,1.0,0.0
+astar,0.0,0.0,1.0,125.15
+astar_basic,0.0,0.0,1.0,313.2
+greedy,11.7,29.0,0.3,7.8
+random,10.45,24.0,0.3,0.0
+template,9.8,24.0,0.3,0.0
+ucs,0.0,0.0,1.0,509.0
+wastar1.5,0.0,0.0,1.0,105.35
+wastar2,0.6,6.0,0.9,86.05

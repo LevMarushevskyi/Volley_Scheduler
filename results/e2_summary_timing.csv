@@ -1,0 +1,13 @@
+tier,method,median_runtime_s
+large,annealing,0.54
+large,astar,2.76
+large,greedy,0.0
+large,random,0.0
+large,template,0.0
+large,wastar2,2.87
+medium,annealing,0.86
+medium,astar,12.16
+medium,greedy,0.01
+medium,random,0.0
+medium,template,0.0
+medium,wastar2,8.97
