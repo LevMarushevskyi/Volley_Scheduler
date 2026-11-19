@@ -65,22 +65,40 @@ def play_bracket(seeded, rng, verbose=False):
 
     return alive[0]                        # the champion
 
-##TEST 
-if __name__ == "__main__":
-    rng = random.Random(7)
-    teams = make_teams(16)
-    pools = snake_pools(teams, 4)
+def run_tournament(teams, n_pools, rng):
+    """One full tournament: pools -> Gold bracket -> champion."""
+    pools = snake_pools(teams, n_pools)
 
     pool_winners, runners_up, records = [], [], {}
     for pool in pools:
         standings, record = play_pool(pool, rng)
-        records.update(record)             # merge this pool's scoreboard in
-        pool_winners.append(standings[0])  # 1st place
-        runners_up.append(standings[1])    # 2nd place
+        records.update(record)              # merge this pool's scoreboard in
+        pool_winners.append(standings[0])   # 1st place
+        runners_up.append(standings[1])     # 2nd place
 
     seeded = seed_order(pool_winners, records) + seed_order(runners_up, records)
-    print("Gold seeds:", [t["id"] for t in seeded])
+    return play_bracket(seeded, rng)        # no printing, just the champion
 
-    champ = play_bracket(seeded, rng, verbose=True)
-    print(f"Champion: {champ['id']} ({champ['rating']})")
+def best_team_win_rate(teams, n_pools, n_runs=1000, seed=0):
+    """Run many tournaments. How often does the highest-rated team win?"""
+    rng = random.Random(seed)
+    best = max(teams, key=lambda t: t["rating"])   # the true best team
+
+    wins = 0
+    for _ in range(n_runs):
+        champ = run_tournament(teams, n_pools, rng)
+        if champ["id"] == best["id"]:
+            wins += 1
+
+    p = wins / n_runs                               # win rate, e.g. 0.42
+    margin = 1.96 * (p * (1 - p) / n_runs) ** 0.5   # 95% margin of error
+    return best, p, margin
+
+##TEST 
+if __name__ == "__main__":
+    teams = make_teams(16)
+    best, p, margin = best_team_win_rate(teams, n_pools=4, n_runs=1000)
+    print(f"Best team: {best['id']} ({best['rating']})")
+    print(f"Wins Gold {p:.1%} of 1000 tournaments (± {margin:.1%})")
+    print(f"Pure luck would be {1/16:.1%}")
 
