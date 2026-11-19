@@ -5,7 +5,8 @@ from vsched.search.bestfirst import solve_greedy
 from vsched.sim.durations import replay, simulate_delays
 from vsched.sim.fairness import kendall_tau_b, simulate, simulate_spread
 from vsched.sim.ratings import p_match_best_of_3, p_set
-from vsched.sim.tournament import Format, bracket_order
+from vsched.sim.tournament import Format, best_team_win_rate, bracket_order, play_pool
+from vsched.sim.ratings import make_teams
 
 
 def test_set_probability():
@@ -56,3 +57,23 @@ def test_delay_replay(W):
     assert on_time["overrun_min"] == 0 and on_time["max_delay_min"] == 0
     d = simulate_delays(inst, s, n_reps=50, seed=1, cv=0.3)
     assert d["day_end_min"].shape == (50,) and d["max_delay_min"].min() >= 0
+
+
+def test_pr1_api_still_works():
+    """The fairness-sim owner's original entry points keep their behaviour."""
+    teams = make_teams(16, spread=1000)
+    best, p, margin = best_team_win_rate(teams, n_pools=4, n_runs=300)
+    assert best["rating"] == max(t["rating"] for t in teams) and p > 0.9 and margin > 0
+
+
+def test_head_to_head_breaks_two_way_tie(monkeypatch):
+    import random
+    import vsched.sim.tournament as tour
+    # A and B finish 2-1 with identical set ratio 5/9; B beat A, so B is 1st.
+    results = {("A", "B"): (1, 2), ("A", "C"): (2, 1), ("A", "D"): (2, 1),
+               ("B", "C"): (1, 2), ("B", "D"): (2, 1), ("C", "D"): (0, 2)}
+    ratings = {1500 + i: n for i, n in enumerate("ABCD")}
+    monkeypatch.setattr(tour, "play_match", lambda ra, rb, rng, **kw: results[(ratings[ra], ratings[rb])])
+    pool = [{"id": n, "rating": 1500 + i} for i, n in enumerate("ABCD")]
+    standings, rec = tour.play_pool(pool, random.Random(0))
+    assert [t["id"] for t in standings] == ["B", "A", "D", "C"]

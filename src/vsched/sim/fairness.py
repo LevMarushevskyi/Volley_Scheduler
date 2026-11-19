@@ -44,16 +44,18 @@ def _run(fmt: Format, n_runs: int, seed: int, draw) -> dict:
     played_sum = 0
     for i in range(n_runs):
         ratings = draw(nrng)
-        order = np.argsort(-np.asarray(ratings), kind="stable")  # team ids by true strength
-        r_sorted = [float(ratings[j]) for j in order]
-        res = run_once(fmt, r_sorted, rng)
+        order = np.argsort(-np.asarray(ratings), kind="stable")  # input indices, strongest first
+        # team id = true rank (0 = best); ratings tied with the best do not count as best
+        teams = [{"id": k, "rating": float(ratings[j])} for k, j in enumerate(order)]
+        res = run_once(fmt, teams, rng)
         champ = res["champion"]
         if champ is not None:
-            champ_counts[int(order[champ])] += 1
-            if champ == 0:
+            champ_counts[int(order[champ["id"]])] += 1
+            if champ["id"] == 0:
                 wins += 1
-        taus[i] = kendall_tau_b(np.arange(n, dtype=float), np.asarray(res["placement"], dtype=float))
-        played_sum += sum(res["played"])
+        place = np.array([res["placement"][k] for k in range(n)], dtype=float)
+        taus[i] = kendall_tau_b(np.arange(n, dtype=float), place)
+        played_sum += sum(res["played"].values())
     p = wins / n_runs
     lo, hi = ci95(p, n_runs)
     return {"p_best_wins_gold": p, "ci_low": lo, "ci_high": hi,
