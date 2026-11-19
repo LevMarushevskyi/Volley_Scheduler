@@ -37,17 +37,50 @@ def play_pool(pool, rng):
 
     return sorted(pool, key=rank_key, reverse=True), record
 
+def seed_order(teams, records):
+    """Sort teams by pool results: wins, then set ratio."""
+    def key(t):
+        r = records[t["id"]]
+        return (r["wins"], r["sets_won"] / (r["sets_won"] + r["sets_lost"]))
+    return sorted(teams, key=key, reverse=True)
+
+
+def play_bracket(seeded, rng, verbose=False):
+    """Single elimination for 8 seeded teams. Returns the champion."""
+    order = [0, 7, 3, 4, 1, 6, 2, 5]       # 1v8, 4v5, 2v7, 3v6 (counting from 0)
+    alive = [seeded[i] for i in order]     # line teams up in bracket order
+
+    while len(alive) > 1:                  # until one team is left
+        winners = []
+        for i in range(0, len(alive), 2):  # take teams two at a time
+            a, b = alive[i], alive[i + 1]
+            a_sets, b_sets = play_match(a["rating"], b["rating"], rng)
+            w = a if a_sets > b_sets else b
+            winners.append(w)
+            if verbose:
+                print(f"  {a['id']} vs {b['id']}  {a_sets}-{b_sets}  -> {w['id']}")
+        if verbose:
+            print("  ---")
+        alive = winners                    # winners move to the next round
+
+    return alive[0]                        # the champion
+
 ##TEST 
 if __name__ == "__main__":
     rng = random.Random(7)
     teams = make_teams(16)
     pools = snake_pools(teams, 4)
 
-    for letter, pool in zip("ABCD", pools):
+    pool_winners, runners_up, records = [], [], {}
+    for pool in pools:
         standings, record = play_pool(pool, rng)
-        print(f"\nPool {letter}:")
-        for place, t in enumerate(standings, start=1):
-            r = record[t["id"]]
-            print(f"  {place}. {t['id']} ({t['rating']})  "
-                  f"wins {r['wins']}  sets {r['sets_won']}-{r['sets_lost']}")
+        records.update(record)             # merge this pool's scoreboard in
+        pool_winners.append(standings[0])  # 1st place
+        runners_up.append(standings[1])    # 2nd place
+
+    seeded = seed_order(pool_winners, records) + seed_order(runners_up, records)
+    print("Gold seeds:", [t["id"] for t in seeded])
+
+    champ = play_bracket(seeded, rng, verbose=True)
+    print(f"Champion: {champ['id']} ({champ['rating']})")
 
