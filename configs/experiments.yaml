@@ -1,0 +1,65 @@
+# All seeds and sizes for experiments/. Changing these changes the paper's numbers.
+# Experiments use node/move limits (deterministic) rather than wall-clock limits,
+# so `python -m experiments.run_all` writes identical CSVs on every run.
+# Wall-clock runtimes go to results/*_timing.csv, which is not compared.
+weights: configs/weights.yaml
+
+e1:
+  n_tiny: 20
+  base_seed: 1000
+  ucs_node_limit: 2000000
+  size_scan:            # (n_teams, pool_size, courts) for the nodes-vs-size plot
+    - [3, 3, 1]
+    - [4, 4, 1]
+    - [6, 3, 2]
+    - [5, 5, 1]
+    - [8, 4, 2]
+    - [9, 3, 3]
+  size_scan_node_limit: 300000
+  annealing: {n_moves: 10000, restarts: 3}
+
+e2:
+  medium: {n: 10, base_seed: 2000}
+  large: {n: 6, base_seed: 3000}
+  search_node_limit: 150000
+  annealing: {n_moves: 20000, restarts: 3}
+  methods: [template, random, greedy, wastar2, astar, annealing]
+
+e3:
+  n: 8
+  base_seed: 2000
+  settings:
+    default: {}
+    idle_heavy: {idle: 4, makespan: 1}
+    coach_heavy: {coach_conflict: 30, three_straight: 10}
+  methods: [template, random, greedy, annealing]
+  annealing: {n_moves: 10000, restarts: 2}
+
+e5:
+  n_teams: 24
+  n_runs: 10000
+  seed: 5000
+  spreads: [50, 150, 250]
+  pool_sizes: [3, 4, 6]
+  gold_cuts: [[1], [1, 2]]
+  seedings: [snake, random]
+
+e6:
+  n_teams: 24
+  courts: 8
+  start: "08:00"
+  end: "20:00"
+  match_minutes: 45
+  instance_seed: 6000
+  spread: 150
+  n_runs: 10000
+  seed: 6001
+  node_limit: 150000
+  annealing: {n_moves: 30000, restarts: 3}
+
+e7:
+  n: 6
+  base_seed: 2000
+  n_reps: 1000
+  cv: 0.15
+  seed: 7000
