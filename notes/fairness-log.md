@@ -55,6 +55,11 @@ dominates pools. Many runs are needed to tell whether that's rare or common.
 - But the best team still loses ~60% of tournaments; the seed-7 upset was the
   typical outcome, not a fluke.
 
+  ## Sanity checks (1,000 runs each)
+- Equal field (all 1500): "best" team won 5.4% (± 1.4%); expected 6.25%. Pass.
+- Huge gap (spread 1000): best team won 98.9% (± 0.6%). Pass.
+- Normal field (spread 150): 39.8% (± 3.0%), the main result.
+
 ## Next steps
 - Best team's win rate over 1,000 runs, with margin of error.
 - Sanity checks: equal ratings, each team ~1/16; huge spread, best team ~always.

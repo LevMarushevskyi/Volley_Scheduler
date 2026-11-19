@@ -96,9 +96,14 @@ def best_team_win_rate(teams, n_pools, n_runs=1000, seed=0):
 
 ##TEST 
 if __name__ == "__main__":
-    teams = make_teams(16)
-    best, p, margin = best_team_win_rate(teams, n_pools=4, n_runs=1000)
-    print(f"Best team: {best['id']} ({best['rating']})")
-    print(f"Wins Gold {p:.1%} of 1000 tournaments (± {margin:.1%})")
-    print(f"Pure luck would be {1/16:.1%}")
+    print("Sanity checks + main result (16 teams, 4 pools of 4, 1000 runs each)\n")
+
+    for spread, label in [(0, "Equal field (all 1500)"),
+                          (150, "Normal field (main result)"),
+                          (1000, "Huge gap")]:
+        teams = make_teams(16, spread=spread)
+        best, p, margin = best_team_win_rate(teams, n_pools=4, n_runs=1000)
+        print(f"{label:28} best team wins {p:.1%} (± {margin:.1%})")
+
+    print(f"\nPure luck would be {1/16:.1%}")
 
