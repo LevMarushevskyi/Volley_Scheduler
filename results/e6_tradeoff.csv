@@ -1,0 +1,7 @@
+pool_size,gold_cut,label,schedule_method,convenience_cost,makespan_slots,idle,coach_conflict,p_best_wins_gold,ci_low,ci_high,kendall_tau_mean,kendall_tau_sd,matches_per_team_mean,n_runs
+3,1,"pools of 3, top 1",astar,12.0,6.0,0.0,0.0,0.4481,0.438353,0.457847,0.612273,0.107226,3.833333,10000
+3,2,"pools of 3, top 2",astar,12.0,6.0,0.0,0.0,0.4443,0.434561,0.454039,0.617527,0.108268,3.833333,10000
+4,1,"pools of 4, top 1",annealing,79.0,14.0,33.0,0.0,0.4693,0.459518,0.479082,0.621534,0.098782,4.833333,10000
+4,2,"pools of 4, top 2",annealing,79.0,14.0,33.0,0.0,0.4539,0.444142,0.463658,0.638564,0.098241,4.833333,10000
+6,1,"pools of 6, top 1",annealing,168.0,15.0,87.0,0.0,0.4593,0.449533,0.469067,0.636611,0.090993,6.833333,10000
+6,2,"pools of 6, top 2",annealing,168.0,15.0,87.0,0.0,0.4556,0.445839,0.465361,0.627321,0.095175,6.833333,10000
