@@ -44,9 +44,9 @@ def pending_idle(slot: int, court: int, teams, mask: int, P, team_court) -> int:
         if last < 0 or last == slot:
             continue
         if all(mask >> mi & 1 for mi in P.team_matches[t]):
-            continue  # no match left: a later ref duty is not certain
+            continue
         gap = slot - last - 1
-        if team_court[t] < court:  # its court's cell in this slot is already decided
+        if team_court[t] < court:
             gap += 1
         n += gap
     return n
@@ -60,7 +60,7 @@ def imbalance_lb(mask: int, teams, P, pool_match_list) -> int:
         parity = 1 if len(pool_match_list[p]) % k else 0
         refs = [teams[t][3] for t in mem]
         if not left:
-            total += max(refs) - min(refs)  # fixed now, charged exactly at the goal
+            total += max(refs) - min(refs)
             continue
         hi = max(refs)
         lo = min(refs[i] + sum(1 for mi in left if t not in P.matches[mi][:2]) for i, t in enumerate(mem))

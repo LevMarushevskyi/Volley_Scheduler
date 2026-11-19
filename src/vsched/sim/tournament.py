@@ -23,7 +23,7 @@ from itertools import combinations
 
 try:  # package import (vsched.sim.tournament)
     from .ratings import make_teams, play_match
-except ImportError:  # `python src/vsched/sim/tournament.py`, as in PR #1
+except ImportError:
     from ratings import make_teams, play_match
 
 
@@ -48,9 +48,9 @@ class Format:
 def snake_pools(teams, n_pools):
     """Split teams into balanced pools using snake seeding."""
     ranked = sorted(teams, key=lambda t: t["rating"], reverse=True)  # best first
-    pools = [[] for _ in range(n_pools)]   # e.g. 4 empty pools: [[], [], [], []]
-    for i, team in enumerate(ranked):      # i = 0, 1, 2, ... (seed number - 1)
-        row = i // n_pools                 # which "row" of the snake we're on
+    pools = [[] for _ in range(n_pools)]
+    for i, team in enumerate(ranked):
+        row = i // n_pools
         col = i % n_pools                  # position within that row
         if row % 2 == 1:                   # odd rows go backwards
             col = n_pools - 1 - col
@@ -73,8 +73,8 @@ def play_pool(pool, rng, match_format="best_of_3", played=None):
     """Round robin: every team plays every other team once.
     Returns the pool sorted 1st to last, and each team's record."""
     record = {t["id"]: {"wins": 0, "sets_won": 0, "sets_lost": 0}
-              for t in pool}               # a blank scoreboard for each team
-    beat = {}                              # head-to-head: (a, b) -> winner id
+              for t in pool}
+    beat = {}
 
     for a, b in combinations(pool, 2):     # every possible pair, once
         a_sets, b_sets = play_match(a["rating"], b["rating"], rng, match_format=match_format)
@@ -101,7 +101,6 @@ def play_pool(pool, rng, match_format="best_of_3", played=None):
     coin = {t["id"]: rng.random() for t in pool}
     standings = sorted(pool, key=lambda t: (main_key(t), coin[t["id"]]), reverse=True)
 
-    # head-to-head, only when exactly two teams are tied on wins and set ratio
     i = 0
     while i < len(standings) - 1:
         group = [standings[i]]
@@ -141,15 +140,15 @@ def play_bracket(seeded, rng, verbose=False, out_round=None, played=None):
     n = len(seeded)
     if n == 0:
         return None
-    size = 1 << (n - 1).bit_length()       # next power of 2: byes fill the rest
+    size = 1 << (n - 1).bit_length()
     alive = [seeded[s - 1] if s <= n else None for s in bracket_order(size)]
     rnd = int(math.log2(size))
 
     while len(alive) > 1:                  # until one team is left
         winners = []
-        for i in range(0, len(alive), 2):  # take teams two at a time
+        for i in range(0, len(alive), 2):
             a, b = alive[i], alive[i + 1]
-            if a is None or b is None:     # a bye: the other team walks through
+            if a is None or b is None:
                 winners.append(a if b is None else b)
                 continue
             a_sets, b_sets = play_match(a["rating"], b["rating"], rng)
@@ -164,7 +163,7 @@ def play_bracket(seeded, rng, verbose=False, out_round=None, played=None):
                 print(f"  {a['id']} vs {b['id']}  {a_sets}-{b_sets}  -> {w['id']}")
         if verbose:
             print("  ---")
-        alive = winners                    # winners move to the next round
+        alive = winners
         rnd -= 1
 
     if out_round is not None:
@@ -191,7 +190,7 @@ def run_once(fmt, teams, rng):
     placement, base, champion = {}, 0, None
     for bi, (_name, places) in enumerate(fmt.brackets):
         seeded = []
-        for place in places:               # pool winners first, then runners-up, ...
+        for place in places:
             seeded += seed_order(by_place.get(place, []), records)
         out = {}
         champ = play_bracket(seeded, rng, out_round=out, played=played)

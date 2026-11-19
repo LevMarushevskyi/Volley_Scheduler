@@ -17,9 +17,9 @@ class Problem:
     matches: list[tuple[int, int, int]]  # (t1, t2, pool idx)
     match_ids: list[str]
     pool_court: list[int]               # pool idx -> 0-based court
-    court_matches: list[list[int]]      # court -> match idxs on it
+    court_matches: list[list[int]]
     team_matches: list[list[int]]
-    coach_mates: list[list[int]]        # team idx -> other teams with same coach
+    coach_mates: list[list[int]]
     n_slots: int
     n_courts: int
 

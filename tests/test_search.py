@@ -84,7 +84,7 @@ def test_baselines_and_greedy_feasible_on_generated(seed, W):
         if r is None:
             continue
         if r.schedule.method == "template" and not r.feasible:
-            continue  # a fixed sheet may not fit a short day; that is a finding, not a bug
+            continue
         assert r.feasible, (r.schedule.method, check_feasible(inst, r.schedule))
         assert check_feasible(inst, r.schedule) == []
 

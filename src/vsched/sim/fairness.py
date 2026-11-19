@@ -45,7 +45,6 @@ def _run(fmt: Format, n_runs: int, seed: int, draw) -> dict:
     for i in range(n_runs):
         ratings = draw(nrng)
         order = np.argsort(-np.asarray(ratings), kind="stable")  # input indices, strongest first
-        # team id = true rank (0 = best); ratings tied with the best do not count as best
         teams = [{"id": k, "rating": float(ratings[j])} for k, j in enumerate(order)]
         res = run_once(fmt, teams, rng)
         champ = res["champion"]

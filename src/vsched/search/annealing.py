@@ -128,7 +128,6 @@ class _State:
         for mi in matches_touched:
             a, b, _ = P.matches[mi]
             teams.update((a, b))
-        # refs could have changed: include every team of the touched pools
         pools = {P.matches[mi][2] for mi in matches_touched}
         for p in pools:
             teams.update(P.pool_members[p])
@@ -180,14 +179,14 @@ def _propose(st: _State, rng: random.Random, court_of_pool: list[int]):
     mi = rng.randrange(len(P.matches))
     c, s, r = st.cells[mi]
     a, b, p = P.matches[mi]
-    if kind < 0.35:  # swap two matches' cells on the same court
+    if kind < 0.35:
         same = [m for m in range(len(P.matches)) if m != mi and st.cells[m][0] == c]
         if not same:
             return None
         m2 = rng.choice(same)
         c2, s2, r2 = st.cells[m2]
         return [(mi, c, s2, r), (m2, c2, s, r2)]
-    if kind < 0.70:  # move to an empty cell on its court
+    if kind < 0.70:
         empties = [x for x in range(st.T) if st.occ[c][x] == -1]
         if not empties:
             return None
@@ -251,7 +250,6 @@ def anneal(inst: Instance, weights: dict[str, float], start: Schedule, *, seed: 
             saved = st.rescore([m for m, *_ in ch])
             delta = st.total - before
             if delta <= 0 or rng.random() < math.exp(-delta / temp):
-                # keep court_of_pool in sync after a pool-court swap
                 for m, c, _, _ in ch:
                     court_of_pool[P.matches[m][2]] = c
                 if st.total < r_best - 1e-9:

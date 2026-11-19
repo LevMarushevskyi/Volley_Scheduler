@@ -41,7 +41,7 @@ def test_matches_per_team_and_determinism():
     a = simulate_spread(fmt, 150, 500, seed=9)
     b = simulate_spread(fmt, 150, 500, seed=9)
     assert a == b
-    assert a["matches_per_team_mean"] > 3  # 3 pool matches + at least one bracket match for most
+    assert a["matches_per_team_mean"] > 3
 
 
 def test_kendall():
@@ -69,7 +69,6 @@ def test_pr1_api_still_works():
 def test_head_to_head_breaks_two_way_tie(monkeypatch):
     import random
     import vsched.sim.tournament as tour
-    # A and B finish 2-1 with identical set ratio 5/9; B beat A, so B is 1st.
     results = {("A", "B"): (1, 2), ("A", "C"): (2, 1), ("A", "D"): (2, 1),
                ("B", "C"): (1, 2), ("B", "D"): (2, 1), ("C", "D"): (0, 2)}
     ratings = {1500 + i: n for i, n in enumerate("ABCD")}

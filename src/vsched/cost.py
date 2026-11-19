@@ -45,7 +45,6 @@ def check_feasible(inst: Instance, sched: Schedule) -> list[str]:
     matches = {m.match_id: m for m in instance_matches(inst)}
     pool_of = {t.id: p for p, members in instance_pools(inst).items() for t in members}
 
-    # 1. every pool match exactly once
     counts = Counter(a.match_id for a in sched.assignments)
     for mid in matches:
         if counts[mid] == 0:
@@ -59,20 +58,17 @@ def check_feasible(inst: Instance, sched: Schedule) -> list[str]:
         elif {a.team1, a.team2} != {m.team1, m.team2} or a.pool != m.pool:
             v.append(f"match {a.match_id} has wrong teams or pool")
 
-    # 5. every slot inside the day (and court exists)
     for a in sched.assignments:
         if not (0 <= a.slot < inst.n_slots):
             v.append(f"match {a.match_id} slot {a.slot} outside day (0..{inst.n_slots - 1})")
         if not (1 <= a.court <= inst.courts):
             v.append(f"match {a.match_id} court {a.court} does not exist")
 
-    # 2. at most one match per court per slot
     cells = Counter((a.court, a.slot) for a in sched.assignments)
     for (c, s), n in sorted(cells.items()):
         if n > 1:
             v.append(f"court {c} slot {s} has {n} matches")
 
-    # 4. ref from the same pool and not playing in that slot
     playing = defaultdict(set)
     for a in sched.assignments:
         playing[a.slot].update((a.team1, a.team2))
@@ -82,7 +78,6 @@ def check_feasible(inst: Instance, sched: Schedule) -> list[str]:
         if a.ref in playing[a.slot]:
             v.append(f"match {a.match_id} ref {a.ref} is playing in slot {a.slot}")
 
-    # 3. a team does at most one thing per slot
     busy = Counter()
     for a in sched.assignments:
         for t in (a.team1, a.team2, a.ref):

@@ -11,10 +11,10 @@ ELO_SCALE = 400
 
 def make_teams(n_teams, mean=1500, spread=150, seed=42):
     """Create n_teams fake teams, each with a skill rating."""
-    rng = random.Random(seed)              # our own dice, locked to a seed
+    rng = random.Random(seed)
     teams = []                             # empty list to fill up
     for i in range(n_teams):               # repeat once per team
-        rating = rng.gauss(mean, spread)   # random number from a bell curve
+        rating = rng.gauss(mean, spread)
         teams.append({
             "id": f"T{i+1:02d}",           # name: T01, T02, ... T16
             "rating": round(rating),       # whole number, like 1534
@@ -28,12 +28,12 @@ def p_win_set(rating_a, rating_b, scale=ELO_SCALE):
     return 1 / (1 + 10 ** (-gap / scale))  # Elo formula
 
 
-p_set = p_win_set  # short alias used by the general simulator
+p_set = p_win_set
 
 
 def play_set(rating_a, rating_b, rng, scale=ELO_SCALE):
     """Play one set. True = A wins, False = B wins."""
-    roll = rng.random()                    # random number between 0 and 1
+    roll = rng.random()
     return roll < p_win_set(rating_a, rating_b, scale)
 
 
@@ -53,7 +53,7 @@ def play_match(rating_a, rating_b, rng, best_of=3, match_format="best_of_3", sca
                 b_sets += 1
         return a_sets, b_sets
     need = best_of // 2 + 1                # sets needed to win: 2
-    while a_sets < need and b_sets < need: # keep going until someone hits 2
+    while a_sets < need and b_sets < need:
         if play_set(rating_a, rating_b, rng, scale):
             a_sets += 1                    # A took this set
         else:

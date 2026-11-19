@@ -57,7 +57,7 @@ def main():
                                               **{f"mean_{k}": (k, "mean") for k in COMPONENTS}).round(3)
     summ.to_csv(RESULTS / "e2_summary.csv")
     rt = tdf.groupby(["tier", "method"]).runtime_s.median().rename("median_runtime_s").round(2)
-    rt.to_csv(RESULTS / "e2_summary_timing.csv")  # wall clock: not expected to match between runs
+    rt.to_csv(RESULTS / "e2_summary_timing.csv")
     print(summ.join(rt).to_string())
 
     fig, axes = plt.subplots(1, 2, figsize=(8, 3.6), sharey=True)

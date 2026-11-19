@@ -33,7 +33,7 @@ METHOD_LABELS = {
     "random": "Random baseline",
 }
 EXACT = {"astar", "ucs", "wastar2", "wastar1.5"}
-TINY_MATCHES = 12  # exact search is offered freely only up to this many pool matches
+TINY_MATCHES = 12
 LIMITS = {"node_limit": 200_000, "time_limit_s": 15}
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 
@@ -71,8 +71,6 @@ def cost_table(results: dict[str, dict]) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------------ sidebar
-st.sidebar.title("🏐 Convenient and Fair")
-st.sidebar.caption("Pool-play scheduling by search, and format fairness by simulation.")
 with st.sidebar:
     st.subheader("Tournament")
     mode = st.radio("Teams", ["Generate N teams", "Paste a team list"], horizontal=True)
@@ -102,7 +100,7 @@ try:
         inst = make_instance(int(n_teams), int(pool_size), int(courts), seed=0, instance_id="app", start=start,
                              end=end, match_minutes=int(match_minutes), coach_frac=coach_frac)
     pools = instance_pools(inst)
-except Exception as e:  # bad input: show it, don't crash
+except Exception as e:
     st.error(f"Input problem: {e}")
     st.stop()
 

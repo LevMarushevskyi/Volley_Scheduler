@@ -24,7 +24,7 @@ def minutes_to_hhmm(m: int) -> str:
 class Team:
     id: str
     seed: int
-    rating: float = 1500.0  # used only by the fairness simulator
+    rating: float = 1500.0
     coach: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -149,7 +149,7 @@ class SearchResult:
     max_frontier: int
     runtime_s: float
     hit_limit: bool             # node or time limit reached
-    optimal_proven: bool        # True only for UCS/A* that finished
+    optimal_proven: bool
 
 
 # ---------------------------------------------------------------- JSON io

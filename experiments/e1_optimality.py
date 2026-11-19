@@ -13,7 +13,7 @@ from vsched.search.bestfirst import (solve_astar, solve_astar_basic, solve_greed
 
 from .common import RESULTS, SERIES, BASELINE, config, has_templates, save, style, weights
 
-BIG = 10_000  # wall-clock limits are effectively off; node/move limits decide
+BIG = 10_000
 
 
 def main():

@@ -17,7 +17,6 @@ FIGURES = ROOT / "figures"
 RESULTS.mkdir(exist_ok=True)
 FIGURES.mkdir(exist_ok=True)
 
-# Validated categorical order (dataviz reference palette, light mode) + neutrals.
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a"]
 BASELINE = "#8a8984"
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#e4e3df"

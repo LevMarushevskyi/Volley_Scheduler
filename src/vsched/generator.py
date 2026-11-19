@@ -9,9 +9,6 @@ from .model import Instance, Team, minutes_to_hhmm, hhmm_to_minutes
 from .roundrobin import snake_pools
 
 TIERS = {
-    # pools range, pool sizes, courts as a fraction of pools (1.0 = one court per pool).
-    # tiny = what UCS proves optimal in seconds: 1 pool of 3-4 or 2 pools of 3
-    # (2 pools of 4 take UCS ~1.7M nodes / 85 s, so E1 treats them separately).
     "tiny":   {"pools": (1, 2),  "sizes": (3, 4),    "court_frac": (1.0, 1.0)},
     "medium": {"pools": (3, 6),  "sizes": (3, 4, 5), "court_frac": (0.67, 1.0)},
     "large":  {"pools": (8, 12), "sizes": (3, 4),    "court_frac": (0.5, 1.0)},
@@ -28,7 +25,6 @@ def make_instance(n_teams: int, pool_size: int, courts: int, *, seed: int, insta
     teams = [Team(id=f"T{i + 1:02d}", seed=i + 1, rating=round(float(ratings[i]), 1)) for i in range(n_teams)]
     pools = snake_pools(teams, pool_size)
     names = list(pools)
-    # coaches: ~coach_frac of teams, linked in pairs across different pools
     n_pairs = int(round(coach_frac * n_teams / 2))
     if len(names) >= 2 and n_pairs == 0 and coach_frac > 0:
         n_pairs = 1
@@ -63,7 +59,6 @@ def generate(tier: str, seed: int) -> Instance:
         k = 3
     lo, hi = cfg["court_frac"]
     courts = max(1, min(n_pools, int(math.ceil(n_pools * rng.uniform(lo, hi)))))
-    # keep the day under ~14 slots
     while courts < n_pools and math.ceil(n_pools / courts) * k * (k - 1) // 2 > 12:
         courts += 1
     slack = int(rng.integers(1, 4))

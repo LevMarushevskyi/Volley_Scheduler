@@ -50,7 +50,7 @@ class _Canon:
     def __init__(self, P: Problem, has_coach: list[bool]):
         self.P = P
         self.members = P.pool_members
-        self.local_pairs = []  # pool -> [(match idx, i, j)] with local member positions
+        self.local_pairs = []
         for p, mem in enumerate(P.pool_members):
             pos = {t: i for i, t in enumerate(mem)}
             self.local_pairs.append([(mi, pos[a], pos[b]) for mi, (a, b, mp) in enumerate(P.matches) if mp == p])
@@ -123,10 +123,10 @@ def best_first(inst: Instance, weights: dict[str, float], *, mode: str, w: float
         s, q = divmod(idx, C)
         end = lower_bound_end(s, q, rem_court)
         if end >= T:
-            return None  # cannot finish inside the day: prune
+            return None
         if not use_h:
             return 0.0
-        h = W_mk * (end - s)  # slots 0..s are already charged in g
+        h = W_mk * (end - s)
         if use_full:
             h += W_idle * pending_idle(s, q, teams, mask, P, team_court)
             h += W_imb * imbalance_lb(mask, teams, P, pool_match_list)
@@ -159,9 +159,8 @@ def best_first(inst: Instance, weights: dict[str, float], *, mode: str, w: float
     if h0 is None:
         return _empty_result(inst, method, 0, 0, t0, False)
     tie = count()
-    g0 = W_mk if P.matches else 0.0  # entering slot 0 with matches to play
+    g0 = W_mk if P.matches else 0.0
     pk0 = pool_keys(0, teams0)
-    # node: (idx, mask, teams, rem_court, g, parent, action, pool_keys)
     root = (0, 0, teams0, rem_court0, g0, None, None, pk0)
     frontier = [(prio(g0, h0, 0), next(tie), root)]
     best_g: dict = {(0, pk0): g0}
@@ -256,7 +255,7 @@ def best_first(inst: Instance, weights: dict[str, float], *, mode: str, w: float
                 if nidx >= C * T:
                     continue
                 if nidx % C == 0:
-                    cg = cg + W_mk  # opening a new slot with matches left
+                    cg = cg + W_mk
                 h = h_of(nidx, cmask, cteams, crc)
                 if h is None:
                     continue
@@ -289,4 +288,4 @@ solve_astar = _solver("astar", name="astar")
 solve_astar_basic = _solver("astar", name="astar_basic", heuristic="makespan")
 solve_wastar15 = _solver("wastar", 1.5, name="wastar1.5")
 solve_wastar2 = _solver("wastar", 2.0, name="wastar2")
-solve_greedy = _solver("greedy", name="greedy", heuristic="makespan")  # full h traps greedy on plateaus
+solve_greedy = _solver("greedy", name="greedy", heuristic="makespan")

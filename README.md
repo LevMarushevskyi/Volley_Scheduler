@@ -148,3 +148,39 @@ package.
 
 COMP 560 team project. Real-data baseline from VolleyLens (anonymized), used
 with permission.
+
+## Step-by-step: run it locally
+
+1. **Get the code**
+   ```bash
+   git clone https://github.com/LevMarushevskyi/Volley_Scheduler.git
+   cd Volley_Scheduler
+   ```
+2. **Create a Python 3.11 environment** (check with `python3.11 --version`)
+   ```bash
+   python3.11 -m venv .venv
+   source .venv/bin/activate        # Windows: .venv\Scripts\activate
+   ```
+3. **Install everything**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Run the tests** (about 15 s; expect `167 passed`)
+   ```bash
+   pytest -q
+   ```
+5. **Open the app** (opens http://localhost:8501; Ctrl+C to stop)
+   ```bash
+   streamlit run app/streamlit_app.py
+   ```
+6. **Reproduce all results** (about 13 min; writes `results/` and `figures/`)
+   ```bash
+   python -m experiments.run_all
+   ```
+7. **Optional: run one experiment or the fairness demo**
+   ```bash
+   python -m experiments.e6_tradeoff
+   python src/vsched/sim/tournament.py
+   ```
+
+In every new terminal, run `source .venv/bin/activate` first.
