@@ -27,6 +27,10 @@ pip install -r requirements.txt     # pinned deps + `pip install -e .`
 pytest -q                           # ~170 tests, about 15 s
 ```
 
+## Slides
+
+`slides/convenient-and-fair.pptx` (and `.pdf`): the 5-minute presentation, with speaker notes. Its numbers come from `results/`.
+
 ## Run
 
 | What | Command | Output |
