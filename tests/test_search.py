@@ -14,7 +14,7 @@ from vsched.search.bestfirst import best_first, solve_astar, solve_astar_basic, 
 from conftest import make
 
 TINY = [generate("tiny", s) for s in range(20)]
-FIXTURE_TPL = load_templates("tests/fixtures/templates_test.json")
+FIXTURE_TPL = load_templates()  # data/templates.json
 
 
 @pytest.mark.parametrize("inst", TINY, ids=lambda i: i.instance_id)
@@ -80,7 +80,7 @@ def test_baselines_and_greedy_feasible_on_generated(seed, W):
     tier = ("tiny", "medium", "large")[seed % 3]
     inst = generate(tier, seed)
     for r in (solve_random(inst, W, seed=seed), solve_greedy(inst, W, time_limit_s=10),
-              solve_template(inst, W, templates=FIXTURE_TPL) if inst.pool_size <= 5 else None):
+              solve_template(inst, W, templates=FIXTURE_TPL)):
         if r is None:
             continue
         if r.schedule.method == "template" and not r.feasible:
@@ -112,3 +112,23 @@ def test_registry_signature_and_fallback(W):
         assert METHODS[name](inst, W, seed=0, node_limit=1000, time_limit_s=5).feasible
     r = solve("astar", inst, W, node_limit=50, time_limit_s=5, fallback=True)
     assert r.feasible and r.hit_limit and "fallback" in r.schedule.method
+
+
+def test_templates_file_is_valid_round_robin():
+    tpl = load_templates()
+    assert set(tpl) >= {3, 4, 5, 6}
+    for k, seq in tpl.items():
+        pairs = {frozenset(e[:2]) for e in seq}
+        assert len(seq) == len(pairs) == k * (k - 1) // 2
+        slots = [e[3] for e in seq]
+        assert len(set(slots)) == len(slots)
+        for a, b, r, _ in seq:
+            assert r not in (a, b) and {a, b, r} <= set(range(1, k + 1))
+
+
+def test_template_matches_lev_sheet(W):
+    inst = make(4, 4, 1, 8)
+    r = solve_template(inst, W)
+    got = [(a.slot, a.team1, a.team2, a.ref) for a in sorted(r.schedule.assignments, key=lambda a: a.slot)]
+    assert got == [(0, "T01", "T03", "T02"), (1, "T02", "T04", "T01"), (2, "T01", "T04", "T03"),
+                   (3, "T02", "T03", "T04"), (4, "T03", "T04", "T02"), (5, "T01", "T02", "T03")]

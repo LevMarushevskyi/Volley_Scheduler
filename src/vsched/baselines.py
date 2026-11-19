@@ -61,35 +61,36 @@ def solve_random(instance: Instance, weights: dict[str, float], *, seed: int = 0
 
 
 # ---------------------------------------------------------------- template
-def load_templates(path: str | Path | None = None) -> dict[int, list[tuple[int, int, int]]]:
-    """templates.json -> {pool size: [(pos_a, pos_b, ref_pos), ...] in play order}.
+def load_templates(path: str | Path | None = None) -> dict[int, list[tuple[int, int, int, int]]]:
+    """templates.json -> {pool size: [(pos_a, pos_b, ref_pos, slot), ...]}.
 
+    File format (Lev's pool sheets), keyed by pool size:
+        {"4": [{"slot": 1, "teams": [1, 3], "ref": 2}, ...], ...}
     Positions are 1-based places in the pool's seed order (1 = best seed in
-    the pool). Each match entry may be a list [a, b, ref] or an object
-    {"teams": [a, b], "ref": r}.
+    the pool); slots are 1-based and relative to the pool's start on its
+    court. Keys starting with "_" are comments.
     """
     p = Path(path) if path else TEMPLATES_PATH
     if not p.exists():
-        raise FileNotFoundError(f"{p} not found: the template baseline needs Lev's real pool sheets")
+        raise FileNotFoundError(f"{p} not found: the template baseline needs the pool sheets")
     with open(p) as f:
         data = json.load(f)
     out = {}
-    for k, tpl in data["templates"].items():
+    for k, entries in data.items():
+        if k.startswith("_"):
+            continue
         seq = []
-        for e in tpl["matches"]:
-            if isinstance(e, dict):
-                (a, b), r = e["teams"], e["ref"]
-            else:
-                a, b, r = e
-            seq.append((int(a), int(b), int(r)))
-        out[int(k)] = seq
+        for i, e in enumerate(entries):
+            a, b = e["teams"]
+            seq.append((int(a), int(b), int(e["ref"]), int(e.get("slot", i + 1))))
+        out[int(k)] = sorted(seq, key=lambda x: x[3])
     return out
 
 
 def solve_template(instance: Instance, weights: dict[str, float], *, seed: int = 0,
                    node_limit: int = 2_000_000, time_limit_s: float = 60,
-                   templates: dict[int, list[tuple[int, int, int]]] | None = None) -> SearchResult:
-    """Lay each pool's fixed sheet onto its court, one match per slot.
+                   templates: dict[int, list[tuple[int, int, int, int]]] | None = None) -> SearchResult:
+    """Lay each pool's sheet onto its court at the sheet's slots.
     Pools sharing a court run back to back in pool order."""
     t0 = time.perf_counter()
     tpls = templates if templates is not None else load_templates()
@@ -102,9 +103,10 @@ def solve_template(instance: Instance, weights: dict[str, float], *, seed: int =
         if k not in tpls:
             raise KeyError(f"no template for pool size {k} in templates.json")
         q = P.pool_court[p]
-        for (a, b, r) in tpls[k]:
+        start = next_slot[q]
+        for (a, b, r, slot) in tpls[k]:
             ta, tb, tr = members[a - 1], members[b - 1], members[r - 1]
             mi = mindex[(min(ta, tb), max(ta, tb))]
-            cells[mi] = (q, next_slot[q], tr)
-            next_slot[q] += 1
+            cells[mi] = (q, start + slot - 1, tr)
+            next_slot[q] = max(next_slot[q], start + slot)
     return _result(instance, P.to_schedule(cells, "template"), weights, t0)
